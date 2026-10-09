@@ -320,6 +320,23 @@ const PLACES = [
 
   // ── FOOD (curated picks beyond ACC dinner) ────────────
   {
+    id: 'nikuya_daidokoro',
+    name: 'Nikuya no Daidokoro (肉屋の台所)',
+    name_jp: '肉屋の台所',
+    category: 'food',
+    area: 'Shinjuku (Nishi-guchi)',
+    address: '2F 2nd Shoull Bldg, 3-min walk from JR Shinjuku East Exit',
+    hours: '12:00–23:00 daily',
+    hours24: { open: '12:00', close: '23:00' },
+    lat: 35.6938,
+    lng: 139.6986,
+    maps: 'https://www.google.com/maps/search/?api=1&query=Nikuya+no+Daidokoro+Shinjuku',
+    notes: 'AYCE A4/A5 Kuroge Wagyu yakiniku. ~¥4,500 lunch / ~¥5,500–6,000 dinner. Chain — also branches in Shibuya (Hachiko side, scramble views), Ueno, Iidabashi. Book via Tabelog or KKday.',
+    price: '¥4,500–6,000',
+    duration: '1.5h',
+    requiresBooking: true,
+  },
+  {
     id: 'sushi_hatsume',
     name: 'Sushi Hatsume (鮨 はつめ)',
     name_jp: '鮨 はつめ',
