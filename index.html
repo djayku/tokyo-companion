@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a1a1a" />
+  <meta name="description" content="Tokyo travel companion — Oct 14–16, 2026. Map, hours, places, schedule." />
+  <title>Tokyo · Companion</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">東京</div>
+      <div class="brand-text">
+        <h1>Tokyo</h1>
+        <span class="sub">Oct 14–16, 2026</span>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="nowBtn" class="chip" type="button" aria-pressed="false">Now open</button>
+      <button id="themeBtn" class="chip icon" type="button" aria-label="Toggle theme">☼</button>
+    </div>
+  </header>
+
+  <nav class="day-tabs" id="dayTabs" role="tablist">
+    <button class="day-tab active" data-day="2026-10-14" role="tab" aria-selected="true">
+      <span class="dow">Wed</span>
+      <span class="num">14</span>
+    </button>
+    <button class="day-tab" data-day="2026-10-15" role="tab" aria-selected="false">
+      <span class="dow">Thu</span>
+      <span class="num">15</span>
+    </button>
+    <button class="day-tab" data-day="2026-10-16" role="tab" aria-selected="false">
+      <span class="dow">Fri</span>
+      <span class="num">16</span>
+    </button>
+  </nav>
+
+  <main class="content">
+    <!-- Day banner -->
+    <section class="day-banner" id="dayBanner">
+      <div class="day-banner-main">
+        <span class="kicker" id="dayKicker">Day 1 of 3</span>
+        <h2 id="dayTitle">Wed Oct 14</h2>
+        <p id="daySummary">Free day — jet-lag recovery + sightseeing</p>
+      </div>
+    </section>
+
+    <!-- Schedule -->
+    <section class="card schedule-card">
+      <header class="card-head">
+        <h3>Schedule</h3>
+        <span class="card-meta" id="scheduleMeta"></span>
+      </header>
+      <ol class="schedule" id="schedule"></ol>
+    </section>
+
+    <!-- Quick anchors -->
+    <section class="anchors">
+      <a class="anchor" href="#" data-place="wpue_hotel">
+        <span class="anchor-icon" data-icon="bed"></span>
+        <div>
+          <strong>Hotel</strong>
+          <span>WPUE Shinjuku</span>
+        </div>
+      </a>
+      <a class="anchor" href="#" data-place="opera_city">
+        <span class="anchor-icon" data-icon="briefcase"></span>
+        <div>
+          <strong>Venue</strong>
+          <span>Opera City 30F</span>
+        </div>
+      </a>
+    </section>
+
+    <!-- Filter -->
+    <section class="places-section">
+      <header class="card-head">
+        <h3>Things to do</h3>
+        <div class="filter-chips" id="filterChips">
+          <button class="chip active" data-cat="all" type="button">All</button>
+          <button class="chip" data-cat="sightseeing" type="button">Sights</button>
+          <button class="chip" data-cat="food" type="button">Food</button>
+          <button class="chip" data-cat="activity" type="button">Activity</button>
+          <button class="chip" data-cat="shopping" type="button">Shop</button>
+        </div>
+      </header>
+      <div class="places-grid" id="placesGrid"></div>
+    </section>
+
+    <!-- Map -->
+    <section class="map-section">
+      <header class="card-head">
+        <h3>Map</h3>
+        <span class="card-meta"><span id="mapCount">0</span> places</span>
+      </header>
+      <div id="map" class="map"></div>
+    </section>
+
+    <footer class="foot">
+      <p>Built for Jay · Curated by Blastoise · Open data, save to home screen</p>
+    </footer>
+  </main>
+
+  <!-- FAB -->
+  <button class="fab" id="addBtn" type="button" aria-label="Add place">+ Add place</button>
+
+  <!-- Add modal -->
+  <div class="modal" id="addModal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="addTitle">
+      <header class="modal-head">
+        <h3 id="addTitle">Add a place</h3>
+        <button class="icon-btn" data-close aria-label="Close">×</button>
+      </header>
+      <form class="modal-form" id="addForm">
+        <label>
+          <span>Name</span>
+          <input name="name" required placeholder="e.g. Toyosu Fish Market" />
+        </label>
+        <div class="row two">
+          <label>
+            <span>Category</span>
+            <select name="category">
+              <option value="sightseeing">Sights</option>
+              <option value="food">Food</option>
+              <option value="activity">Activity</option>
+              <option value="shopping">Shop</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label>
+            <span>Area</span>
+            <input name="area" placeholder="e.g. Shibuya" />
+          </label>
+        </div>
+        <label>
+          <span>Address</span>
+          <input name="address" placeholder="Street, ward" />
+        </label>
+        <div class="row two">
+          <label>
+            <span>Open</span>
+            <input name="open" type="time" placeholder="09:00" />
+          </label>
+          <label>
+            <span>Close</span>
+            <input name="close" type="time" placeholder="21:00" />
+          </label>
+        </div>
+        <label>
+          <span>Google Maps URL</span>
+          <input name="maps" placeholder="https://maps.google.com/..." />
+        </label>
+        <label>
+          <span>Notes</span>
+          <textarea name="notes" rows="2" placeholder="What to know"></textarea>
+        </label>
+        <button class="primary" type="submit">Save place</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
