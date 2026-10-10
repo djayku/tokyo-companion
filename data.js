@@ -355,15 +355,84 @@ const PLACES = [
   },
 ];
 
+// ── FLIGHTS — Cathay Pacific (booking ref D9TMWX) ─────────
+const FLIGHTS = [
+  {
+    id: 'cx504',
+    direction: 'Outbound',
+    airline: 'Cathay Pacific',
+    flight: 'CX 504',
+    cabin: 'Economy',
+    booking: 'D9TMWX',
+    from: { code: 'HKG', city: 'Hong Kong', terminal: '1', time: '09:05', tz: 'HKT', date: '2026-10-14' },
+    to:   { code: 'NRT', city: 'Tokyo Narita', terminal: '2', time: '14:30', tz: 'JST', date: '2026-10-14' },
+    duration: '4h 25m',
+    status: 'Confirmed',
+  },
+  {
+    id: 'cx501',
+    direction: 'Return',
+    airline: 'Cathay Pacific',
+    flight: 'CX 501',
+    cabin: 'Economy',
+    booking: 'D9TMWX',
+    from: { code: 'NRT', city: 'Tokyo Narita', terminal: '2', time: '22:00', tz: 'JST', date: '2026-10-16' },
+    to:   { code: 'HKG', city: 'Hong Kong', terminal: '1', time: '01:55', tz: 'HKT', date: '2026-10-17' },
+    duration: '4h 55m',
+    status: 'Confirmed',
+    nextDay: true,
+  },
+];
+
+// ── TRANSIT — key routes (Narita Express recommended) ──────
+const TRANSIT = [
+  {
+    id: 'nrt_to_hotel',
+    label: 'Narita (NRT) → Hotel',
+    context: 'Wed 14 Oct · arrival',
+    timing: 'Land 14:30 → hotel by 17:40 (1h immigration buffer)',
+    steps: [
+      { mode: 'walk',  text: 'NRT T2 → N\'EX underground platform',         meta: '5 min' },
+      { mode: 'train', text: 'Narita Express (N\'EX) → Shinjuku Stn',     meta: '83 min · ¥3,250 · every 30–60 min' },
+      { mode: 'walk',  text: 'Shinjuku Stn → WPUE Hotel Shinjuku',         meta: '7 min walk · 150m from Shinsen-Shinjuku' },
+    ],
+    summary: '~95 min door-to-door. Book N\'EX at jr-odekake.net or counter; advance purchase ¥3,070. Suica/Welcome Suica for transfers.',
+  },
+  {
+    id: 'hotel_to_venue',
+    label: 'Hotel → Opera City 30F',
+    context: 'Daily commute · both in Nishi-Shinjuku',
+    timing: 'Allow 15 min walk · or 8 min via Keio Line',
+    steps: [
+      { mode: 'walk',  text: 'WPUE Hotel → Tokyo Opera City Tower',        meta: '15 min walk · ~1.1 km' },
+      { mode: 'train', text: 'OR: Shinsen-Shinjuku → Hatsudai (Keio Line)', meta: '1 stop · 2 min · ¥140' },
+    ],
+    summary: 'Walk on a nice day. Take Keio if it rains — exits 1 min from venue entrance.',
+  },
+  {
+    id: 'hotel_to_nrt',
+    label: 'Hotel → Narita (NRT)',
+    context: 'Fri 16 Oct · departure (22:00 flight)',
+    timing: 'Depart Shinjuku 18:15 → NRT 19:40 → 2h 20m check-in buffer',
+    steps: [
+      { mode: 'walk',  text: 'WPUE Hotel → Shinjuku Stn',                  meta: '7 min' },
+      { mode: 'train', text: 'N\'EX from Shinjuku → NRT Terminal 2',         meta: '83 min · ¥3,250 · reserve a seat' },
+    ],
+    summary: '~95 min. Buy N\'EX ticket at JR ticket counter or Shinjuku Stn Midori no Madoguchi. Friday evening — book ahead to guarantee a seat.',
+  },
+];
+
 // ── SCHEDULE — hard-coded from MEMORY ───────────────────
 const SCHEDULE = {
   '2026-10-14': {
     label: 'Wed · Arrival',
-    summary: 'Free day — jet-lag recovery + sightseeing',
+    summary: 'Free day — jet-lag recovery + light sightseeing',
     items: [
-      { time: 'Anytime', title: 'Arrive HND/NRT → check in WPUE Hotel Shinjuku', icon: 'plane' },
-      { time: 'Afternoon', title: 'Light sightseeing near hotel: Shinjuku Gyoen, Golden Gai pre-dinner', icon: 'walk' },
-      { time: 'Evening', title: 'Group dinner (optional — Jay to confirm with team)', icon: 'utensils' },
+      { time: '09:05 HKT', title: 'CX 504 departs HKG T1', icon: 'plane' },
+      { time: '14:30 JST', title: 'Arrive NRT T2 — immigration + baggage (~60 min)', icon: 'plane' },
+      { time: '~16:00',    title: 'Narita Express to Shinjuku (~83 min, ¥3,250)', icon: 'train' },
+      { time: '~17:40',    title: 'Arrive WPUE Hotel Shinjuku — early check-in (rooms may wait)', icon: 'bed' },
+      { time: 'Evening',   title: 'Light dinner near hotel (Golden Gai opens 18:00, Shinjuku Gyoen closed by 18)', icon: 'utensils' },
     ],
   },
   '2026-10-15': {
@@ -395,7 +464,12 @@ const SCHEDULE = {
       { time: '12:15–12:45', title: 'AI-Powered Colleague Experience — David McDonald', icon: 'work' },
       { time: '12:45–14:25', title: 'AI workshops — Sabrina Chan', icon: 'work' },
       { time: '14:25–14:40', title: 'Award announcement + Closing — Sabrina Cheung', icon: 'work' },
-      { time: '14:40+', title: 'Free for evening flight or last-minute Tokyo', icon: 'plane' },
+      { time: '14:40–17:00', title: 'Free: freshen up at hotel, last-minute Tokyo (Sushi Hatsume 7 min away)', icon: 'walk' },
+      { time: '17:00–18:00', title: 'Pack + light dinner, head to Shinjuku Station', icon: 'utensils' },
+      { time: '18:15',       title: 'Narita Express to NRT T2 (~83 min, ¥3,250)', icon: 'train' },
+      { time: '19:40',       title: 'Arrive NRT T2 — 2h 20m buffer (dinner, duty-free)', icon: 'plane' },
+      { time: '22:00 JST',   title: 'CX 501 departs NRT T2', icon: 'plane' },
+      { time: '01:55 HKT',   title: 'Arrive HKG T1 (Sat 17 Oct) — clear customs', icon: 'plane' },
     ],
   },
 };
@@ -404,4 +478,6 @@ const SCHEDULE = {
 if (typeof window !== 'undefined') {
   window.PLACES = PLACES;
   window.SCHEDULE = SCHEDULE;
+  window.FLIGHTS = FLIGHTS;
+  window.TRANSIT = TRANSIT;
 }

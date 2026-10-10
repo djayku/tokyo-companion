@@ -332,10 +332,85 @@
     });
   }
 
+  // ── RENDER FLIGHTS & TRANSIT ───────────────────────────
+  function modeIcon(m) {
+    return ({ walk: 'walk', train: 'train', bus: 'bus', plane: 'plane', car: 'map' })[m] || 'map';
+  }
+
+  function renderFlightsTransit() {
+    const el = $('#flightsTransit');
+    if (!el) return;
+
+    const flightHTML = FLIGHTS.map(f => {
+      const arrivesNext = f.to.date !== f.from.date;
+      const dateRange = arrivesNext
+        ? `${fmtDay(f.from.date)} → ${fmtDay(f.to.date)}`
+        : fmtDay(f.from.date);
+      return `
+        <div class="flight-leg">
+          <div class="flight-head">
+            <span class="flight-tag ${f.direction.toLowerCase()}">${f.direction}</span>
+            <span class="flight-meta">${escapeHTML(f.flight)} · ${escapeHTML(f.airline)} · ${escapeHTML(f.cabin)}</span>
+          </div>
+          <div class="flight-route">
+            <div class="endpoint dep">
+              <div class="ep-time">${escapeHTML(f.from.time)}</div>
+              <div class="ep-code">${escapeHTML(f.from.code)}</div>
+              <div class="ep-city">${escapeHTML(f.from.city)}</div>
+              <div class="ep-terminal">T${escapeHTML(f.from.terminal)} · ${escapeHTML(f.from.tz)}</div>
+            </div>
+            <div class="flight-line">
+              <span class="line-plane" data-icon="plane"></span>
+              <div class="line-duration">${escapeHTML(f.duration)}</div>
+              <div class="line-bar"></div>
+              ${arrivesNext ? '<div class="line-nextday">arrives next day</div>' : ''}
+            </div>
+            <div class="endpoint arr">
+              <div class="ep-time">${escapeHTML(f.to.time)}</div>
+              <div class="ep-code">${escapeHTML(f.to.code)}</div>
+              <div class="ep-city">${escapeHTML(f.to.city)}</div>
+              <div class="ep-terminal">T${escapeHTML(f.to.terminal)} · ${escapeHTML(f.to.tz)}</div>
+            </div>
+          </div>
+          <div class="flight-date">${dateRange}</div>
+        </div>
+      `;
+    }).join('');
+
+    const transitHTML = TRANSIT.map(t => `
+      <div class="route">
+        <div class="route-head">
+          <h4 class="route-label">${escapeHTML(t.label)}</h4>
+          <span class="route-context">${escapeHTML(t.context)}</span>
+        </div>
+        <ol class="route-steps">
+          ${t.steps.map(s => `
+            <li class="route-step">
+              <span class="step-icon" data-icon="${modeIcon(s.mode)}"></span>
+              <div class="step-body">
+                <div class="step-line">${escapeHTML(s.text)}</div>
+                ${s.meta ? `<div class="step-meta">${escapeHTML(s.meta)}</div>` : ''}
+              </div>
+            </li>
+          `).join('')}
+        </ol>
+        ${t.timing ? `<div class="route-timing">⚡ ${escapeHTML(t.timing)}</div>` : ''}
+        ${t.summary ? `<p class="route-summary">${escapeHTML(t.summary)}</p>` : ''}
+      </div>
+    `).join('');
+
+    el.innerHTML = `
+      <div class="ft-flights">${flightHTML}</div>
+      <div class="ft-divider"><span>Transit</span></div>
+      <div class="ft-transit">${transitHTML}</div>
+    `;
+  }
+
   // ── INIT ───────────────────────────────────────────────
   function init() {
     renderDay();
     renderPlaces();
+    renderFlightsTransit();
     initMap();
     wireDayTabs();
     wireFilters();
